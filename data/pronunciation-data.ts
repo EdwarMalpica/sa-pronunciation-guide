@@ -37,8 +37,8 @@ export const phrases: Phrase[] = [
     languageId: "es-ES",
     text: "Buenos días",
     translation: "Good morning",
-    audioUrl:
-      "https://ssl.gstatic.com/dictionary/static/pronunciation/2022-03-02/audio/bu/buenos_d%C3%ADas_es_es_1.mp3",
+    // Using a reliable source for audio files or just rely on speech synthesis
+    audioUrl: "/placeholder.svg?height=1&width=1", // This will trigger fallback to speech synthesis
     difficulty: "beginner",
   },
   {
@@ -46,8 +46,7 @@ export const phrases: Phrase[] = [
     languageId: "es-ES",
     text: "¿Cómo estás?",
     translation: "How are you?",
-    audioUrl:
-      "https://ssl.gstatic.com/dictionary/static/pronunciation/2022-03-02/audio/c%C3%B3/c%C3%B3mo_est%C3%A1s_es_es_1.mp3",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "beginner",
   },
   {
@@ -55,7 +54,7 @@ export const phrases: Phrase[] = [
     languageId: "es-ES",
     text: "Mucho gusto en conocerte",
     translation: "Nice to meet you",
-    audioUrl: "https://ssl.gstatic.com/dictionary/static/pronunciation/2022-03-02/audio/mu/mucho_gusto_es_es_1.mp3",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "intermediate",
   },
 
@@ -65,7 +64,7 @@ export const phrases: Phrase[] = [
     languageId: "fr-FR",
     text: "Bonjour",
     translation: "Hello",
-    audioUrl: "https://ssl.gstatic.com/dictionary/static/pronunciation/2022-03-02/audio/bo/bonjour_fr_fr_1.mp3",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "beginner",
   },
   {
@@ -73,8 +72,7 @@ export const phrases: Phrase[] = [
     languageId: "fr-FR",
     text: "Comment allez-vous?",
     translation: "How are you?",
-    audioUrl:
-      "https://ssl.gstatic.com/dictionary/static/pronunciation/2022-03-02/audio/co/comment_allez-vous_fr_fr_1.mp3",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "beginner",
   },
   {
@@ -82,7 +80,7 @@ export const phrases: Phrase[] = [
     languageId: "fr-FR",
     text: "Je suis enchanté de faire votre connaissance",
     translation: "I am delighted to meet you",
-    audioUrl: "https://ssl.gstatic.com/dictionary/static/pronunciation/2022-03-02/audio/en/enchant%C3%A9_fr_fr_1.mp3",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "intermediate",
   },
 
@@ -92,7 +90,7 @@ export const phrases: Phrase[] = [
     languageId: "de-DE",
     text: "Guten Tag",
     translation: "Good day",
-    audioUrl: "https://ssl.gstatic.com/dictionary/static/pronunciation/2022-03-02/audio/gu/guten_tag_de_de_1.mp3",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "beginner",
   },
   {
@@ -100,8 +98,7 @@ export const phrases: Phrase[] = [
     languageId: "de-DE",
     text: "Wie geht es Ihnen?",
     translation: "How are you?",
-    audioUrl:
-      "https://ssl.gstatic.com/dictionary/static/pronunciation/2022-03-02/audio/wi/wie_geht_es_ihnen_de_de_1.mp3",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "beginner",
   },
   {
@@ -109,7 +106,7 @@ export const phrases: Phrase[] = [
     languageId: "de-DE",
     text: "Es freut mich, Sie kennenzulernen",
     translation: "I am pleased to meet you",
-    audioUrl: "https://ssl.gstatic.com/dictionary/static/pronunciation/2022-03-02/audio/es/es_freut_mich_de_de_1.mp3",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "intermediate",
   },
 
@@ -119,7 +116,7 @@ export const phrases: Phrase[] = [
     languageId: "ja-JP",
     text: "おはようございます",
     translation: "Good morning",
-    audioUrl: "https://assets.languagepod101.com/dictionary/japanese/audiomp3.php?kana=おはようございます",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "beginner",
   },
   {
@@ -127,7 +124,7 @@ export const phrases: Phrase[] = [
     languageId: "ja-JP",
     text: "お元気ですか",
     translation: "How are you?",
-    audioUrl: "https://assets.languagepod101.com/dictionary/japanese/audiomp3.php?kana=お元気ですか",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "beginner",
   },
   {
@@ -135,7 +132,7 @@ export const phrases: Phrase[] = [
     languageId: "ja-JP",
     text: "はじめまして、よろしくお願いします",
     translation: "Nice to meet you, please treat me well",
-    audioUrl: "https://assets.languagepod101.com/dictionary/japanese/audiomp3.php?kana=はじめまして",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "intermediate",
   },
 
@@ -145,7 +142,7 @@ export const phrases: Phrase[] = [
     languageId: "zh-CN",
     text: "你好",
     translation: "Hello",
-    audioUrl: "https://assets.languagepod101.com/dictionary/chinese/audiomp3.php?kana=你好",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "beginner",
   },
   {
@@ -153,7 +150,7 @@ export const phrases: Phrase[] = [
     languageId: "zh-CN",
     text: "你好吗？",
     translation: "How are you?",
-    audioUrl: "https://assets.languagepod101.com/dictionary/chinese/audiomp3.php?kana=你好吗",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "beginner",
   },
   {
@@ -161,7 +158,7 @@ export const phrases: Phrase[] = [
     languageId: "zh-CN",
     text: "很高兴认识你",
     translation: "Nice to meet you",
-    audioUrl: "https://assets.languagepod101.com/dictionary/chinese/audiomp3.php?kana=很高兴认识你",
+    audioUrl: "/placeholder.svg?height=1&width=1",
     difficulty: "intermediate",
   },
 ]

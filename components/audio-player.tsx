@@ -10,19 +10,27 @@ interface AudioPlayerProps {
   label: string
   fallbackText?: string // Text to speak if audio fails
   language?: string // Language code for speech synthesis
+  initialDuration?: number // Initial duration in seconds
 }
 
-export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US" }: AudioPlayerProps) {
+export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US", initialDuration }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
-  const [duration, setDuration] = useState(0)
+  const [duration, setDuration] = useState(initialDuration || 0)
   const [currentTime, setCurrentTime] = useState(0)
   const [volume, setVolume] = useState(1)
   const [isMuted, setIsMuted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [useFallback, setUseFallback] = useState(false)
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const audioRef = useRef<HTMLAudioElement>(null)
   const speechSynthRef = useRef<SpeechSynthesisUtterance | null>(null)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const progressTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Initialize with the provided duration if available
+  useEffect(() => {
+    if (initialDuration && initialDuration > 0) {
+      setDuration(initialDuration)
+    }
+  }, [initialDuration])
 
   // Set up speech synthesis for fallback
   useEffect(() => {
@@ -46,16 +54,23 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US" 
       // Set up event listeners for the utterance
       utterance.onstart = () => {
         setIsPlaying(true)
-        // Start a timer to simulate progress
-        let elapsed = 0
-        const estimatedDuration = fallbackText.length * 80 // Rough estimate: 80ms per character
-        setDuration(estimatedDuration / 1000)
+        // Estimate duration based on text length (at least 1 second)
+        const estimatedDuration = Math.max(1, (fallbackText.length * 80) / 1000) // At least 1 second
+        if (!duration || duration <= 0) {
+          setDuration(estimatedDuration)
+        }
 
-        timerRef.current = setInterval(() => {
-          elapsed += 100
-          setCurrentTime(elapsed / 1000)
-          if (elapsed >= estimatedDuration) {
-            if (timerRef.current) clearInterval(timerRef.current)
+        // Start a timer to update progress
+        let elapsed = 0
+        if (progressTimerRef.current) {
+          clearInterval(progressTimerRef.current)
+        }
+
+        progressTimerRef.current = setInterval(() => {
+          elapsed += 0.1
+          setCurrentTime(Math.min(elapsed, duration || estimatedDuration))
+          if (elapsed >= (duration || estimatedDuration)) {
+            if (progressTimerRef.current) clearInterval(progressTimerRef.current)
             setIsPlaying(false)
             setCurrentTime(0)
           }
@@ -65,52 +80,53 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US" 
       utterance.onend = () => {
         setIsPlaying(false)
         setCurrentTime(0)
-        if (timerRef.current) clearInterval(timerRef.current)
+        if (progressTimerRef.current) clearInterval(progressTimerRef.current)
       }
 
       utterance.onerror = () => {
         setIsPlaying(false)
-        if (timerRef.current) clearInterval(timerRef.current)
+        if (progressTimerRef.current) clearInterval(progressTimerRef.current)
       }
 
       return () => {
         if (window.speechSynthesis.speaking) {
           window.speechSynthesis.cancel()
         }
-        if (timerRef.current) clearInterval(timerRef.current)
+        if (progressTimerRef.current) clearInterval(progressTimerRef.current)
       }
     }
-  }, [fallbackText, language, volume])
+  }, [fallbackText, language, volume, duration])
 
-  // Create and set up audio element when audioUrl changes
+  // Handle audio element events
   useEffect(() => {
-    setUseFallback(false)
+    const audio = audioRef.current
+    if (!audio) return
 
-    // Clean up previous audio element
-    if (audioRef.current) {
-      audioRef.current.pause()
-      audioRef.current.src = ""
-    }
-
-    if (!audioUrl) return
-
-    setIsLoading(true)
-
-    // Create new audio element
-    const audio = new Audio()
-
-    // Set up event listeners
     const handleLoadedMetadata = () => {
       if (audio.duration && !isNaN(audio.duration)) {
-        setDuration(audio.duration)
-      } else {
-        setDuration(0)
+        // Only update duration if we don't already have a valid one
+        if (!initialDuration || initialDuration <= 0) {
+          setDuration(audio.duration)
+        }
+      } else if (!initialDuration || initialDuration <= 0) {
+        // Set a minimum duration of 1 second if actual duration can't be determined
+        setDuration(1)
       }
       setIsLoading(false)
     }
 
     const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime)
+
+      // Update duration if it becomes available during playback (common with blob URLs)
+      if (
+        audio.duration &&
+        !isNaN(audio.duration) &&
+        audio.duration > 0 &&
+        (!initialDuration || initialDuration <= 0)
+      ) {
+        setDuration(audio.duration)
+      }
     }
 
     const handleEnded = () => {
@@ -118,33 +134,35 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US" 
       setCurrentTime(0)
     }
 
-    const handleError = (e: Event) => {
+    const handleError = () => {
       // Silently switch to fallback without showing errors
       setIsLoading(false)
       setUseFallback(true)
+
+      // Only set a fallback duration if we don't already have one
+      if (!initialDuration || initialDuration <= 0) {
+        // Set a minimum duration for fallback
+        setDuration(Math.max(1, fallbackText ? fallbackText.length * 0.08 : 1))
+      }
     }
 
+    // Set up event listeners
     audio.addEventListener("loadedmetadata", handleLoadedMetadata)
     audio.addEventListener("timeupdate", handleTimeUpdate)
     audio.addEventListener("ended", handleEnded)
     audio.addEventListener("error", handleError)
 
-    // Set initial volume
-    audio.volume = volume
-    audio.muted = isMuted
-
-    // Set the source and preload
-    audio.crossOrigin = "anonymous" // Try to avoid CORS issues
-    audio.src = audioUrl
-    audio.preload = "metadata"
-
-    audioRef.current = audio
-
     // Set a timeout to detect if audio is taking too long to load
     const timeoutId = setTimeout(() => {
-      if (isLoading) {
+      if (isLoading && audioUrl) {
         setIsLoading(false)
         setUseFallback(true)
+
+        // Only set a fallback duration if we don't already have one
+        if (!initialDuration || initialDuration <= 0) {
+          // Set a minimum duration for fallback
+          setDuration(Math.max(1, fallbackText ? fallbackText.length * 0.08 : 1))
+        }
       }
     }, 3000) // Reduced timeout for better UX
 
@@ -155,7 +173,21 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US" 
       audio.removeEventListener("timeupdate", handleTimeUpdate)
       audio.removeEventListener("ended", handleEnded)
       audio.removeEventListener("error", handleError)
-      audio.pause()
+    }
+  }, [audioUrl, fallbackText, initialDuration, isLoading])
+
+  // Update audio source when audioUrl changes
+  useEffect(() => {
+    if (!audioRef.current) return
+
+    setUseFallback(false)
+    setIsLoading(!!audioUrl)
+
+    if (audioUrl) {
+      audioRef.current.src = audioUrl
+      audioRef.current.load()
+    } else {
+      audioRef.current.removeAttribute("src")
     }
   }, [audioUrl])
 
@@ -177,7 +209,7 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US" 
       if (isPlaying) {
         window.speechSynthesis.cancel()
         setIsPlaying(false)
-        if (timerRef.current) clearInterval(timerRef.current)
+        if (progressTimerRef.current) clearInterval(progressTimerRef.current)
       } else {
         if (speechSynthRef.current) {
           window.speechSynthesis.speak(speechSynthRef.current)
@@ -199,7 +231,7 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US" 
           .then(() => {
             setIsPlaying(true)
           })
-          .catch((err) => {
+          .catch(() => {
             // Silently switch to fallback
             setUseFallback(true)
 
@@ -248,6 +280,9 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US" 
 
   return (
     <div className="space-y-2">
+      {/* Hidden native audio element */}
+      <audio ref={audioRef} preload="metadata" crossOrigin="anonymous" className="hidden" />
+
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">{label}</span>
         <span className="text-xs text-muted-foreground">
@@ -258,7 +293,7 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US" 
       <div className="space-y-2">
         <Slider
           value={[currentTime]}
-          max={duration || 100}
+          max={duration || 1}
           step={0.01}
           onValueChange={handleTimeChange}
           aria-label="Seek time"

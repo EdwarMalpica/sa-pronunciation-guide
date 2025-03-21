@@ -11,7 +11,10 @@ export function suppressAudioErrors() {
       if (
         errorString.includes("The element has no supported sources") ||
         errorString.includes("Error playing audio:") ||
-        errorString.includes("Audio error:")
+        errorString.includes("Audio error:") ||
+        errorString.includes("blocked by CORS policy") ||
+        errorString.includes("Failed to load resource") ||
+        errorString.includes("net::ERR_FAILED")
       ) {
         // Suppress these specific errors
         return

@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
 interface AudioRecorderProps {
-  onRecordingComplete: (audioUrl: string) => void
+  onRecordingComplete: (audioUrl: string, duration: number) => void
   disabled?: boolean
 }
 
@@ -20,6 +20,7 @@ export function AudioRecorder({ onRecordingComplete, disabled = false }: AudioRe
   const streamRef = useRef<MediaStream | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const recordingStartTimeRef = useRef<number>(0)
 
   const MAX_RECORDING_TIME = 10 // 10 seconds
 
@@ -47,6 +48,7 @@ export function AudioRecorder({ onRecordingComplete, disabled = false }: AudioRe
       mediaRecorderRef.current = mediaRecorder
 
       chunksRef.current = []
+      recordingStartTimeRef.current = Date.now()
 
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) {
@@ -55,9 +57,15 @@ export function AudioRecorder({ onRecordingComplete, disabled = false }: AudioRe
       }
 
       mediaRecorder.onstop = () => {
+        // Calculate actual recording duration
+        const recordingDuration = (Date.now() - recordingStartTimeRef.current) / 1000
+
+        // Create audio blob with proper duration metadata
         const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" })
         const audioUrl = URL.createObjectURL(audioBlob)
-        onRecordingComplete(audioUrl)
+
+        // Pass both the URL and duration to the parent component
+        onRecordingComplete(audioUrl, recordingDuration)
 
         // Clean up
         if (streamRef.current) {

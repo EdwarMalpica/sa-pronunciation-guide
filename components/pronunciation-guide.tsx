@@ -16,6 +16,7 @@ export function PronunciationGuide() {
   const [selectedPhrase, setSelectedPhrase] = useState<Phrase | null>(null)
   const [nativeAudioUrl, setNativeAudioUrl] = useState<string | null>(null)
   const [userAudioUrl, setUserAudioUrl] = useState<string | null>(null)
+  const [userAudioDuration, setUserAudioDuration] = useState<number | null>(null)
   const [comparisonResult, setComparisonResult] = useState<number | null>(null)
   const [activeTab, setActiveTab] = useState("practice")
 
@@ -24,6 +25,7 @@ export function PronunciationGuide() {
     setSelectedPhrase(null)
     setNativeAudioUrl(null)
     setUserAudioUrl(null)
+    setUserAudioDuration(null)
     setComparisonResult(null)
   }
 
@@ -34,11 +36,17 @@ export function PronunciationGuide() {
     setNativeAudioUrl(phrase.audioUrl)
 
     setUserAudioUrl(null)
+    setUserAudioDuration(null)
     setComparisonResult(null)
+
+    // Reset to practice tab when selecting a new phrase
+    setActiveTab("practice")
   }
 
-  const handleRecordingComplete = (audioUrl: string) => {
+  const handleRecordingComplete = (audioUrl: string, duration: number) => {
     setUserAudioUrl(audioUrl)
+    setUserAudioDuration(duration)
+
     // Simulate comparison result
     // In a real app, this would be calculated by comparing the audio waveforms
     const simulatedAccuracy = Math.floor(Math.random() * 41) + 60 // Random number between 60-100
@@ -95,6 +103,7 @@ export function PronunciationGuide() {
                 <AudioComparison
                   nativeAudioUrl={nativeAudioUrl}
                   userAudioUrl={userAudioUrl}
+                  userAudioDuration={userAudioDuration}
                   comparisonResult={comparisonResult}
                   fallbackText={selectedPhrase?.text}
                   language={selectedLanguage.id}

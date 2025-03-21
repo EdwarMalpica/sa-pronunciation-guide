@@ -4,12 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Header } from "@/components/header"
-import { suppressAudioErrors } from "@/utils/suppress-errors"
-
-// Suppress audio-related console errors
-if (typeof window !== "undefined") {
-  suppressAudioErrors()
-}
+import { ErrorSuppressor } from "@/components/error-suppressor"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -28,6 +23,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen bg-background text-foreground`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <ErrorSuppressor />
           <Header />
           <main className="container mx-auto px-4 py-8">{children}</main>
         </ThemeProvider>
