@@ -60,12 +60,14 @@ export function AudioRecorder({ onRecordingComplete, disabled = false }: AudioRe
         // Calculate actual recording duration
         const recordingDuration = (Date.now() - recordingStartTimeRef.current) / 1000
 
+        // Round up if decimal part is 0.5 or greater
+        const roundedDuration = recordingDuration % 1 >= 0.5 ? Math.ceil(recordingDuration) : recordingDuration
+
         // Create audio blob with proper duration metadata
         const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" })
         const audioUrl = URL.createObjectURL(audioBlob)
 
-        // Pass both the URL and duration to the parent component
-        onRecordingComplete(audioUrl, recordingDuration)
+        onRecordingComplete(audioUrl, roundedDuration)
 
         // Clean up
         if (streamRef.current) {

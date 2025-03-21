@@ -24,11 +24,14 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
   const audioRef = useRef<HTMLAudioElement>(null)
   const speechSynthRef = useRef<SpeechSynthesisUtterance | null>(null)
   const progressTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const durationCheckTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   // Initialize with the provided duration if available
   useEffect(() => {
     if (initialDuration && initialDuration > 0) {
-      setDuration(initialDuration)
+      // Round up if decimal part is 0.5 or greater
+      const roundedDuration = initialDuration % 1 >= 0.5 ? Math.ceil(initialDuration) : initialDuration
+      setDuration(roundedDuration)
     }
   }, [initialDuration])
 
@@ -103,29 +106,67 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
     if (!audio) return
 
     const handleLoadedMetadata = () => {
-      if (audio.duration && !isNaN(audio.duration)) {
-        // Only update duration if we don't already have a valid one
-        if (!initialDuration || initialDuration <= 0) {
-          setDuration(audio.duration)
+      if (audio.duration && !isNaN(audio.duration) && audio.duration !== Number.POSITIVE_INFINITY) {
+        // Only update duration if we don't already have a valid one or if the new duration is more accurate
+        if (!initialDuration || initialDuration <= 0 || (audio.duration > 1 && initialDuration <= 1)) {
+          // Round up if decimal part is 0.5 or greater
+          const roundedDuration = audio.duration % 1 >= 0.5 ? Math.ceil(audio.duration) : audio.duration
+          setDuration(roundedDuration)
         }
       } else if (!initialDuration || initialDuration <= 0) {
         // Set a minimum duration of 1 second if actual duration can't be determined
         setDuration(1)
+
+        // Start a timer to periodically check for duration updates
+        if (durationCheckTimerRef.current) {
+          clearInterval(durationCheckTimerRef.current)
+        }
+
+        durationCheckTimerRef.current = setInterval(() => {
+          if (
+            audio.duration &&
+            !isNaN(audio.duration) &&
+            audio.duration !== Number.POSITIVE_INFINITY &&
+            audio.duration > 1
+          ) {
+            // Round up if decimal part is 0.5 or greater
+            const roundedDuration = audio.duration % 1 >= 0.5 ? Math.ceil(audio.duration) : audio.duration
+            setDuration(roundedDuration)
+            if (durationCheckTimerRef.current) {
+              clearInterval(durationCheckTimerRef.current)
+            }
+          }
+        }, 500)
       }
       setIsLoading(false)
+    }
+
+    const handleDurationChange = () => {
+      if (
+        audio.duration &&
+        !isNaN(audio.duration) &&
+        audio.duration !== Number.POSITIVE_INFINITY &&
+        audio.duration > 0
+      ) {
+        // Round up if decimal part is 0.5 or greater
+        const roundedDuration = audio.duration % 1 >= 0.5 ? Math.ceil(audio.duration) : audio.duration
+        setDuration(roundedDuration)
+      }
     }
 
     const handleTimeUpdate = () => {
       setCurrentTime(audio.currentTime)
 
-      // Update duration if it becomes available during playback (common with blob URLs)
+      // Update duration if it becomes available during playback
       if (
         audio.duration &&
         !isNaN(audio.duration) &&
-        audio.duration > 0 &&
-        (!initialDuration || initialDuration <= 0)
+        audio.duration !== Number.POSITIVE_INFINITY &&
+        audio.duration > 1
       ) {
-        setDuration(audio.duration)
+        // Round up if decimal part is 0.5 or greater
+        const roundedDuration = audio.duration % 1 >= 0.5 ? Math.ceil(audio.duration) : audio.duration
+        setDuration(roundedDuration)
       }
     }
 
@@ -148,9 +189,34 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
 
     // Set up event listeners
     audio.addEventListener("loadedmetadata", handleLoadedMetadata)
+    audio.addEventListener("durationchange", handleDurationChange)
     audio.addEventListener("timeupdate", handleTimeUpdate)
     audio.addEventListener("ended", handleEnded)
     audio.addEventListener("error", handleError)
+
+    // For blob URLs, try to get duration using a different approach
+    if (audioUrl && audioUrl.startsWith("blob:")) {
+      const getBlobDuration = async () => {
+        try {
+          const response = await fetch(audioUrl)
+          const blob = await response.blob()
+
+          // Use AudioContext to decode the audio and get its duration
+          const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+          const arrayBuffer = await blob.arrayBuffer()
+
+          audioContext.decodeAudioData(arrayBuffer, (audioBuffer) => {
+            if (audioBuffer.duration && audioBuffer.duration > 0) {
+              setDuration(audioBuffer.duration)
+            }
+          })
+        } catch (err) {
+          // Silently handle errors
+        }
+      }
+
+      getBlobDuration()
+    }
 
     // Set a timeout to detect if audio is taking too long to load
     const timeoutId = setTimeout(() => {
@@ -169,7 +235,11 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
     // Clean up
     return () => {
       clearTimeout(timeoutId)
+      if (durationCheckTimerRef.current) {
+        clearInterval(durationCheckTimerRef.current)
+      }
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata)
+      audio.removeEventListener("durationchange", handleDurationChange)
       audio.removeEventListener("timeupdate", handleTimeUpdate)
       audio.removeEventListener("ended", handleEnded)
       audio.removeEventListener("error", handleError)
@@ -230,6 +300,17 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
           .play()
           .then(() => {
             setIsPlaying(true)
+
+            // Double-check duration during playback
+            if (
+              audioRef.current &&
+              audioRef.current.duration &&
+              !isNaN(audioRef.current.duration) &&
+              audioRef.current.duration !== Number.POSITIVE_INFINITY &&
+              audioRef.current.duration > 1
+            ) {
+              setDuration(audioRef.current.duration)
+            }
           })
           .catch(() => {
             // Silently switch to fallback
@@ -268,11 +349,15 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
     }
   }
 
+  // Update the formatTime function in the AudioPlayer component
   const formatTime = (time: number) => {
     if (isNaN(time) || !isFinite(time)) return "0:00"
 
-    const minutes = Math.floor(time / 60)
-    const seconds = Math.floor(time % 60)
+    // Round up if decimal part is 0.5 or greater
+    const roundedTime = time % 1 >= 0.5 ? Math.ceil(time) : Math.floor(time)
+
+    const minutes = Math.floor(roundedTime / 60)
+    const seconds = Math.floor(roundedTime % 60)
     return `${minutes}:${seconds.toString().padStart(2, "0")}`
   }
 

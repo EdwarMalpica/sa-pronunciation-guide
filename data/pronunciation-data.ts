@@ -39,6 +39,7 @@ export const phrases: Phrase[] = [
     translation: "Good morning",
     // Using a reliable source for audio files or just rely on speech synthesis
     audioUrl: "/placeholder.svg?height=1&width=1", // This will trigger fallback to speech synthesis
+    audioDuration: 1.5, // Hardcoded duration in seconds
     difficulty: "beginner",
   },
   {
@@ -47,6 +48,7 @@ export const phrases: Phrase[] = [
     text: "¿Cómo estás?",
     translation: "How are you?",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 1.2,
     difficulty: "beginner",
   },
   {
@@ -55,6 +57,7 @@ export const phrases: Phrase[] = [
     text: "Mucho gusto en conocerte",
     translation: "Nice to meet you",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 2.5,
     difficulty: "intermediate",
   },
 
@@ -65,6 +68,7 @@ export const phrases: Phrase[] = [
     text: "Bonjour",
     translation: "Hello",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 1.0,
     difficulty: "beginner",
   },
   {
@@ -73,6 +77,7 @@ export const phrases: Phrase[] = [
     text: "Comment allez-vous?",
     translation: "How are you?",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 1.8,
     difficulty: "beginner",
   },
   {
@@ -81,6 +86,7 @@ export const phrases: Phrase[] = [
     text: "Je suis enchanté de faire votre connaissance",
     translation: "I am delighted to meet you",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 3.2,
     difficulty: "intermediate",
   },
 
@@ -91,6 +97,7 @@ export const phrases: Phrase[] = [
     text: "Guten Tag",
     translation: "Good day",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 1.2,
     difficulty: "beginner",
   },
   {
@@ -99,6 +106,7 @@ export const phrases: Phrase[] = [
     text: "Wie geht es Ihnen?",
     translation: "How are you?",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 1.7,
     difficulty: "beginner",
   },
   {
@@ -107,6 +115,7 @@ export const phrases: Phrase[] = [
     text: "Es freut mich, Sie kennenzulernen",
     translation: "I am pleased to meet you",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 2.8,
     difficulty: "intermediate",
   },
 
@@ -117,6 +126,7 @@ export const phrases: Phrase[] = [
     text: "おはようございます",
     translation: "Good morning",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 2.0,
     difficulty: "beginner",
   },
   {
@@ -125,6 +135,7 @@ export const phrases: Phrase[] = [
     text: "お元気ですか",
     translation: "How are you?",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 1.5,
     difficulty: "beginner",
   },
   {
@@ -133,6 +144,7 @@ export const phrases: Phrase[] = [
     text: "はじめまして、よろしくお願いします",
     translation: "Nice to meet you, please treat me well",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 3.5,
     difficulty: "intermediate",
   },
 
@@ -143,6 +155,7 @@ export const phrases: Phrase[] = [
     text: "你好",
     translation: "Hello",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 0.8,
     difficulty: "beginner",
   },
   {
@@ -151,6 +164,7 @@ export const phrases: Phrase[] = [
     text: "你好吗？",
     translation: "How are you?",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 1.2,
     difficulty: "beginner",
   },
   {
@@ -159,6 +173,7 @@ export const phrases: Phrase[] = [
     text: "很高兴认识你",
     translation: "Nice to meet you",
     audioUrl: "/placeholder.svg?height=1&width=1",
+    audioDuration: 2.0,
     difficulty: "intermediate",
   },
 ]

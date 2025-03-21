@@ -9,6 +9,7 @@ import { useTheme } from "next-themes"
 
 interface AudioComparisonProps {
   nativeAudioUrl: string | null
+  nativeAudioDuration?: number | null
   userAudioUrl: string | null
   userAudioDuration?: number | null
   comparisonResult: number | null
@@ -18,6 +19,7 @@ interface AudioComparisonProps {
 
 export function AudioComparison({
   nativeAudioUrl,
+  nativeAudioDuration,
   userAudioUrl,
   userAudioDuration,
   comparisonResult,
@@ -173,6 +175,7 @@ export function AudioComparison({
             label="Native Speaker"
             fallbackText={fallbackText}
             language={language}
+            initialDuration={nativeAudioDuration || undefined}
           />
           <canvas
             ref={nativeCanvasRef}

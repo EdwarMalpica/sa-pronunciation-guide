@@ -10,7 +10,8 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "Pronunciation Guide",
-  description: "A pronunciation guide widget with voice recording comparison for language learners",
+  description: "A pronunciation guide widget with voice recording comparison for language learners"
+  // Removed the icons section that referenced favicon.ico
     generator: 'v0.dev'
 }
 

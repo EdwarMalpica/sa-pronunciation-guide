@@ -10,6 +10,7 @@ export interface Phrase {
   text: string
   translation: string
   audioUrl: string
+  audioDuration: number // Duration in seconds
   difficulty: "beginner" | "intermediate" | "advanced"
 }
 

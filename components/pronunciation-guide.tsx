@@ -15,6 +15,7 @@ export function PronunciationGuide() {
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(languages[0])
   const [selectedPhrase, setSelectedPhrase] = useState<Phrase | null>(null)
   const [nativeAudioUrl, setNativeAudioUrl] = useState<string | null>(null)
+  const [nativeAudioDuration, setNativeAudioDuration] = useState<number | null>(null)
   const [userAudioUrl, setUserAudioUrl] = useState<string | null>(null)
   const [userAudioDuration, setUserAudioDuration] = useState<number | null>(null)
   const [comparisonResult, setComparisonResult] = useState<number | null>(null)
@@ -24,6 +25,7 @@ export function PronunciationGuide() {
     setSelectedLanguage(language)
     setSelectedPhrase(null)
     setNativeAudioUrl(null)
+    setNativeAudioDuration(null)
     setUserAudioUrl(null)
     setUserAudioDuration(null)
     setComparisonResult(null)
@@ -34,6 +36,7 @@ export function PronunciationGuide() {
 
     // Set the audio URL directly - our AudioPlayer component will handle errors silently
     setNativeAudioUrl(phrase.audioUrl)
+    setNativeAudioDuration(phrase.audioDuration)
 
     setUserAudioUrl(null)
     setUserAudioDuration(null)
@@ -91,6 +94,7 @@ export function PronunciationGuide() {
                   label="Native Speaker"
                   fallbackText={selectedPhrase.text}
                   language={selectedLanguage.id}
+                  initialDuration={nativeAudioDuration || undefined}
                 />
 
                 <AudioRecorder
@@ -102,6 +106,7 @@ export function PronunciationGuide() {
               <TabsContent value="compare" className="space-y-6 pt-4">
                 <AudioComparison
                   nativeAudioUrl={nativeAudioUrl}
+                  nativeAudioDuration={nativeAudioDuration}
                   userAudioUrl={userAudioUrl}
                   userAudioDuration={userAudioDuration}
                   comparisonResult={comparisonResult}
