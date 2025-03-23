@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
-import { Play, Pause, Volume2, VolumeX } from "lucide-react"
+import { Play, Pause } from "lucide-react"
 
 interface AudioPlayerProps {
   audioUrl: string | null
@@ -17,8 +17,7 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
   const [isPlaying, setIsPlaying] = useState(false)
   const [duration, setDuration] = useState(initialDuration || 0)
   const [currentTime, setCurrentTime] = useState(0)
-  const [volume, setVolume] = useState(1)
-  const [isMuted, setIsMuted] = useState(false)
+  // Volume-related state removed
   const [isLoading, setIsLoading] = useState(false)
   const [useFallback, setUseFallback] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -50,7 +49,7 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
       utterance.lang = language
       utterance.rate = 0.9
       utterance.pitch = 1
-      utterance.volume = volume
+      utterance.volume = 1
 
       speechSynthRef.current = utterance
 
@@ -98,7 +97,7 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
         if (progressTimerRef.current) clearInterval(progressTimerRef.current)
       }
     }
-  }, [fallbackText, language, volume, duration])
+  }, [fallbackText, language, duration])
 
   // Handle audio element events
   useEffect(() => {
@@ -261,18 +260,6 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
     }
   }, [audioUrl])
 
-  // Update audio when volume or muted state changes
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume
-      audioRef.current.muted = isMuted
-    }
-
-    if (speechSynthRef.current) {
-      speechSynthRef.current.volume = volume
-    }
-  }, [volume, isMuted])
-
   const togglePlay = () => {
     if (useFallback && fallbackText) {
       // Use speech synthesis
@@ -322,21 +309,6 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
             }
           })
       }
-    }
-  }
-
-  const toggleMute = () => {
-    setIsMuted(!isMuted)
-  }
-
-  const handleVolumeChange = (value: number[]) => {
-    const newVolume = value[0]
-    setVolume(newVolume)
-
-    if (newVolume === 0) {
-      setIsMuted(true)
-    } else if (isMuted) {
-      setIsMuted(false)
     }
   }
 
@@ -397,27 +369,7 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
             {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
           </Button>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleMute}
-              aria-label={isMuted ? "Unmute" : "Mute"}
-              disabled={isLoading}
-            >
-              {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-            </Button>
-
-            <Slider
-              value={[isMuted ? 0 : volume]}
-              max={1}
-              step={0.01}
-              onValueChange={handleVolumeChange}
-              className="w-20"
-              aria-label="Volume"
-              disabled={isLoading}
-            />
-          </div>
+          {/* Volume controls removed */}
         </div>
       </div>
     </div>

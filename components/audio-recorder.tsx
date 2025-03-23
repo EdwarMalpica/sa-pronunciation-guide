@@ -139,7 +139,7 @@ export function AudioRecorder({ onRecordingComplete, disabled = false }: AudioRe
                 {recordingTime}s / {MAX_RECORDING_TIME}s
               </span>
             </>
-          ) }
+          )}
         </div>
         <Button
           variant={isRecording ? "destructive" : "default"}
