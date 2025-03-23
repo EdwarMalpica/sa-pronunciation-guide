@@ -120,29 +120,27 @@ export function AudioRecorder({ onRecordingComplete, disabled = false }: AudioRe
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col items-center space-y-4">
+    <div>
+      {/* Reduced spacing from space-y-4 to space-y-2 */}
+      <div className="flex flex-col items-center space-y-2">
+        {/* Reduced spacing from space-y-4 to space-y-2 */}
         <h3 className="text-sm font-medium">Record your pronunciation</h3>
-
         {error && (
-          <Alert variant="destructive" className="mb-4">
+          <Alert variant="destructive" className="mb-2">
+            {/* Reduced margin from mb-4 to mb-2 */}
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-
         <div className="w-full flex items-center justify-center gap-4">
-          {isRecording ? (
+          {isRecording && (
             <>
               <Progress value={(recordingTime / MAX_RECORDING_TIME) * 100} className="w-full" />
               <span className="text-sm whitespace-nowrap">
                 {recordingTime}s / {MAX_RECORDING_TIME}s
               </span>
             </>
-          ) : (
-            <div className="h-4"></div> // Placeholder for layout stability
-          )}
+          ) }
         </div>
-
         <Button
           variant={isRecording ? "destructive" : "default"}
           onClick={isRecording ? stopRecording : startRecording}

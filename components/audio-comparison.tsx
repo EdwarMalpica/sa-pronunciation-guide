@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { AudioPlayer } from "@/components/audio-player"
 import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
 import { useTheme } from "next-themes"
+import { cn } from "@/lib/utils"
 
 interface AudioComparisonProps {
   nativeAudioUrl: string | null
@@ -181,7 +181,7 @@ export function AudioComparison({
             ref={nativeCanvasRef}
             width="300"
             height="100"
-            className="w-full h-24 mt-2 rounded-md border"
+            className="w-full h-24 mt-4 rounded-md border"
           ></canvas>
         </div>
 
@@ -191,7 +191,7 @@ export function AudioComparison({
             label="Your Recording"
             initialDuration={userAudioDuration || undefined}
           />
-          <canvas ref={userCanvasRef} width="300" height="100" className="w-full h-24 mt-2 rounded-md border"></canvas>
+          <canvas ref={userCanvasRef} width="300" height="100" className="w-full h-24 mt-4 rounded-md border"></canvas>
         </div>
       </div>
 
@@ -201,7 +201,16 @@ export function AudioComparison({
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-medium">Pronunciation Accuracy</h3>
-                <Badge className={getScoreColor(comparisonResult)}>{comparisonResult}%</Badge>
+                {/* Custom badge without hover effect */}
+                <div
+                  className={cn(
+                    "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-none",
+                    getScoreColor(comparisonResult),
+                    "text-white",
+                  )}
+                >
+                  {comparisonResult}%
+                </div>
               </div>
 
               <Progress value={comparisonResult} className="h-2" />

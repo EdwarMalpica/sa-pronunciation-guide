@@ -364,18 +364,20 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
   if (!audioUrl && !fallbackText) return null
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
+      {" "}
+      {/* Increased spacing from space-y-2 to space-y-4 */}
       {/* Hidden native audio element */}
       <audio ref={audioRef} preload="metadata" crossOrigin="anonymous" className="hidden" />
-
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">{label}</span>
         <span className="text-xs text-muted-foreground">
           {formatTime(currentTime)} / {formatTime(duration)}
         </span>
       </div>
-
-      <div className="space-y-2">
+      <div className="space-y-4">
+        {" "}
+        {/* Increased spacing from space-y-2 to space-y-4 */}
         <Slider
           value={[currentTime]}
           max={duration || 1}
@@ -384,7 +386,6 @@ export function AudioPlayer({ audioUrl, label, fallbackText, language = "en-US",
           aria-label="Seek time"
           disabled={isLoading || (useFallback && isPlaying)}
         />
-
         <div className="flex items-center justify-between">
           <Button
             variant="outline"
